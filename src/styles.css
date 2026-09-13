@@ -1,0 +1,193 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #0c100e;
+  --color-foreground: #eef2ee;
+  --color-surface: #141a16;
+  --color-surface-2: #1c241e;
+  --color-muted: #8b968c;
+  --color-subtle: #5c665e;
+  --color-accent: #9aaf9e;
+  --color-accent-fg: #0c100e;
+  --color-mark-x: #f2efe6;
+  --color-mark-o: #8fb89a;
+  --color-win: #7dcea0;
+  --color-border: rgb(238 242 238 / 0.12);
+  --color-border-strong: rgb(238 242 238 / 0.22);
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-xl: 16px;
+  --text-2xs: 0.65rem;
+  --tracking-kicker: 0.18em;
+}
+
+@layer base {
+  html,
+  body,
+  #app {
+    min-height: 100dvh;
+    background: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+.xo-shell {
+  padding-top: max(1.5rem, env(safe-area-inset-top));
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+}
+
+.xo-vignette {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgb(154 175 158 / 0.08), transparent 55%),
+    radial-gradient(80% 60% at 50% 120%, rgb(0 0 0 / 0.45), transparent 60%);
+}
+
+.xo-board {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.04),
+    0 24px 48px rgb(0 0 0 / 0.32);
+}
+
+.xo-cell {
+  touch-action: manipulation;
+  min-height: 44px;
+  transition:
+    background-color 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.xo-cell:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.xo-cell-last::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: 8px;
+  border: 1px solid rgb(238 242 238 / 0.14);
+  pointer-events: none;
+}
+
+.xo-cell-win {
+  background: color-mix(in oklab, var(--color-win) 16%, var(--color-surface));
+}
+
+.xo-mark {
+  width: 58%;
+  height: 58%;
+}
+
+.xo-stroke {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.xo-stroke-a,
+.xo-stroke-b,
+.xo-stroke-o {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: xo-draw 320ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.xo-stroke-b {
+  animation-delay: 90ms;
+}
+
+.xo-stroke-o {
+  stroke-dasharray: 190;
+  stroke-dashoffset: 190;
+  animation-duration: 380ms;
+}
+
+.xo-win-line {
+  stroke: var(--color-win);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 240;
+  stroke-dashoffset: 240;
+  animation: xo-draw 420ms cubic-bezier(0.22, 1, 0.36, 1) 80ms forwards;
+  filter: drop-shadow(0 0 8px rgb(125 206 160 / 0.35));
+}
+
+.xo-board-over {
+  animation: xo-settle 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.xo-shimmer {
+  background: linear-gradient(
+    100deg,
+    var(--color-muted) 0%,
+    var(--color-foreground) 45%,
+    var(--color-muted) 90%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: xo-shimmer 1.4s linear infinite;
+}
+
+@keyframes xo-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes xo-settle {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  25% {
+    transform: translate3d(-2px, 1px, 0);
+  }
+  50% {
+    transform: translate3d(2px, -1px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes xo-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xo-stroke-a,
+  .xo-stroke-b,
+  .xo-stroke-o,
+  .xo-win-line,
+  .xo-board-over,
+  .xo-shimmer,
+  .xo-cell {
+    animation: none !important;
+    transition: none !important;
+    stroke-dashoffset: 0;
+    color: var(--color-foreground);
+    background: none;
+  }
+}
